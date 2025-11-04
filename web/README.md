@@ -1,33 +1,36 @@
-# Web (Angular) — MiniLiga Express
+# Web – Angular SPA
 
-## Objetivo
-Dos pestañas:
-1) **Equipos**: listado + alta.
-2) **Clasificación**: tabla desde `GET /api/standings`.
+Aplicación Angular 17 que consume la API de la Mini Liga Express y ofrece dos pestañas principales:
+- **Equipos**: alta rápida, programación de partidos y eliminación con confirmación.
+- **Clasificación**: tabla reactiva con puntos, goles, diferencia y estado de sincronización.
 
-## Instalación
+## Requisitos
+- Node.js 20+
+- npm 10+
+
+## Configuración
 ```bash
-bash ../scripts/init_web.sh
+cd web
+npm install
 npm start
 ```
 
-## API Service (ejemplo)
-Crea `src/app/services/api.service.ts`:
-```ts
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+- La aplicación queda disponible en `http://localhost:4200`.
+- Ajusta `API_BASE_URL` en `src/environments/environment.ts` y `environment.development.ts` si el backend usa otra URL (por defecto `http://127.0.0.1:8000/api`).
 
-@Injectable({ providedIn: 'root' })
-export class ApiService {
-  private base = environment.API_URL;
-  constructor(private http: HttpClient) {}
-  getTeams() { return this.http.get<any[]>(`${this.base}/api/teams`); }
-  createTeam(payload: { name: string }) { return this.http.post(`${this.base}/api/teams`, payload); }
-  getStandings() { return this.http.get<any[]>(`${this.base}/api/standings`); }
-}
-```
+## Scripts de verificación
+- `npm run lint`
+- `npm run test`
+- `npm run build`
 
-## UI mínima
-- `TeamsComponent`: formulario reactivo `{ name }` y tabla.
-- `StandingsComponent`: tabla con `team`, `played`, `goals_for`, `goals_against`, `goal_diff`, `points`.
+## Funcionalidades destacadas
+- Formularios reactivos para crear equipos y programar partidos con validaciones básicas.
+- Confirmación antes de eliminar equipos y refresco automático de listados.
+- Estilos personalizados (glassmorphism) en `src/app/app.css` y CSS por página.
+- `LeagueApiService` centraliza las peticiones y modelos (`src/app/services/league-api.service.ts`).
+
+## Estructura básica
+- `src/app/pages/teams-page.*` – gestión de equipos y programación de fixtures.
+- `src/app/pages/standings-page.*` – clasificación y recarga manual.
+- `src/app/models/*` – contratos de datos compartidos.
+- `src/app/app.config.ts` – configuración standalone (`provideRouter`, `provideHttpClient`).

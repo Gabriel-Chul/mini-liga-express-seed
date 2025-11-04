@@ -1,32 +1,39 @@
-# Móvil (Ionic + Capacitor) — MiniLiga Express
+# Mobile – Ionic App
 
-## Objetivo
-- Página **Matches**: lista de próximos (sin resultado).
-- Página **Report Result**: form `home_score`, `away_score` → POST a `/api/matches/{id}/result`.
+Aplicación Ionic Angular con tabs para consumir la API de la Mini Liga Express desde dispositivos móviles o navegador.
 
-## Instalación
+## Características
+- **Partidos**: listado con pull-to-refresh y modal para reportar resultados.
+- **Clasificación**: standings calculados por la API.
+- UI responsive compatible con Capacitor para builds nativas.
+
+## Requisitos
+- Node.js 20+
+- npm 10+
+- Ionic CLI (opcional) si generarás builds nativas (`npm install -g @ionic/cli`).
+
+## Puesta en marcha
 ```bash
-bash ../scripts/init_mobile.sh
+cd mobile
+npm install
 npm start
 ```
 
-## Servicio API (ejemplo)
-`src/app/services/api.service.ts`:
-```ts
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+- Se expone en `http://localhost:8100`.
+- Configura `environment.ts` (`apiUrl`) con la URL del backend si no es `http://127.0.0.1:8000`.
 
-@Injectable({ providedIn: 'root' })
-export class ApiService {
-  base = environment.API_URL;
-  constructor(private http: HttpClient) {}
-  getPendingMatches() { return this.http.get<any[]>(`${this.base}/api/matches?played=false`); } // o mock
-  reportResult(id: number, payload: { home_score: number; away_score: number }) {
-    return this.http.post(`${this.base}/api/matches/${id}/result`, payload);
-  }
-}
+## Ejecutar en dispositivo o emulador
+```bash
+npx cap sync
+ionic capacitor run android --livereload
 ```
+Asegúrate de que el dispositivo pueda alcanzar la IP del backend.
 
-## Bonus (opcional)
-- `@capacitor/camera` para previsualizar una foto antes de enviar (no obligatorio).
+## Scripts de verificación
+- `npm run lint`
+- `npm run test`
+
+## Arquitectura breve
+- `src/app/tab1` – listado de partidos y modal `report-result`.
+- `src/app/services/league-api.service.ts` – cliente HTTP centralizado.
+- `src/app/models/*` – tipos compartidos con la API.

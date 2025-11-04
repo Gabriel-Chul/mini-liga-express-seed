@@ -1,72 +1,46 @@
-# Backend (Laravel) — MiniLiga Express
+# Backend – Laravel API
 
-## Objetivo
-Exponer endpoints:
-- `GET /api/teams`
-- `POST /api/teams` `{ name }`
-- `POST /api/matches/{id}/result` `{ home_score, away_score }`
-- `GET /api/standings`
+API REST que gestiona equipos, partidos y standings de la Mini Liga Express.
 
-## Instalación rápida (SQLite)
+## Requisitos
+- PHP 8.2+
+- Composer 2+
+
+## Puesta en marcha
 ```bash
-# Desde la raíz del repo
-bash scripts/init_backend.sh
-
-cd backend
+cp .env.example .env
+composer install
+php artisan key:generate
 php artisan migrate --seed
 php artisan serve
 ```
 
-## Migraciones sugeridas
+- `php artisan migrate --seed` crea las tablas de `teams` y `matches` y precarga 4 clubes, 2 partidos jugados y 2 pendientes.
+- La base de datos usa SQLite (`database/database.sqlite`). El seeder es idempotente: puedes reejecutarlo sin duplicados (`php artisan migrate:fresh --seed`).
+- Si trabajas desde WSL o Linux, antepone `sudo` solo si tu instalación de PHP lo requiere.
 
-### database/migrations/xxxx_create_teams_table.php
-```php
-public function up(): void {
-    Schema::create('teams', function (Blueprint $table) {
-        $table->id();
-        $table->string('name')->unique();
-        $table->integer('goals_for')->default(0);
-        $table->integer('goals_against')->default(0);
-        $table->timestamps();
-    });
-}
-```
+## Endpoints expuestos
+- `GET /api/teams`
+- `POST /api/teams` (`name`)
+- `DELETE /api/teams/{team}`
+- `GET /api/matches`
+- `POST /api/matches` (`home_team_id`, `away_team_id`, `scheduled_at?`)
+- `POST /api/matches/{match}/result` (`home_score`, `away_score`)
+- `GET /api/standings`
 
-### database/migrations/xxxx_create_matches_table.php
-```php
-public function up(): void {
-    Schema::create('matches', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('home_team_id')->constrained('teams');
-        $table->foreignId('away_team_id')->constrained('teams');
-        $table->integer('home_score')->nullable();
-        $table->integer('away_score')->nullable();
-        $table->dateTime('played_at')->nullable();
-        $table->timestamps();
-    });
-}
-```
+Todas las respuestas siguen el contrato descrito en `../openapi.yaml`.
 
-## Seed (ejemplo)
-```php
-public function run(): void {
-    $teams = collect(['Dragons','Sharks','Tigers','Wolves'])
-      ->map(fn($n)=>App\Models\Team::create(['name'=>$n]));
+## Pruebas y calidad
+- `php artisan test` ejecuta la suite completa (feature tests para standings, matches y borrado de equipos).
+- `php artisan pint` aplica formato PSR-12.
+- `php artisan migrate:fresh --seed` es la forma recomendada de resetear datos durante QA.
 
-    // crea 2-3 partidos sin resultado
-    App\Models\Match::create([
-      'home_team_id'=>$teams[0]->id, 'away_team_id'=>$teams[1]->id
-    ]);
-    App\Models\Match::create([
-      'home_team_id'=>$teams[2]->id, 'away_team_id'=>$teams[3]->id
-    ]);
-}
-```
+## Variables relevantes
+- `APP_URL` debe coincidir con la URL que expone tu servidor (`http://127.0.0.1:8000`).
+- `config/cors.php` lista los orígenes permitidos (4200, 8100 y Capacitor).
 
-## Lógica standings (orientativa)
-- `points`: W=3, D=1, L=0.
-- `played`: partidos con `home_score` y `away_score` no nulos.
-- Orden: `points DESC`, `goal_diff DESC`, `goals_for DESC`.
-
-## Test mínimo (Pest o PHPUnit)
-- Crea dos equipos, un partido y registra dos resultados (victoria y empate) asegurando que los puntos se calculan correctamente.
+## Estructura clave
+- Modelos: `app/Models/Team.php`, `app/Models/LeagueMatch.php`.
+- Controladores: `app/Http/Controllers/Api/TeamController.php`, `MatchController.php`.
+- Seeders y factories: `database/seeders/DatabaseSeeder.php`, `database/factories/*`.
+- Pruebas: `tests/Feature/StandingsTest.php`, `MatchesTest.php`, `TeamsTest.php`.
