@@ -1,0 +1,63 @@
+.state {
+	padding: 0.75rem 1rem;
+	text-align: center;
+}
+
+.spinner {
+	display: flex;
+	justify-content: center;
+	padding: 2rem 0;
+}
+
+.empty {
+	text-align: center;
+	color: var(--ion-color-medium);
+	padding: 2rem 1rem;
+}
+
+.score {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.score__line {
+	display: flex;
+	justify-content: space-between;
+	font-size: 1.05rem;
+}
+
+.pending {
+	margin-bottom: 0.5rem;
+	color: var(--ion-color-medium);
+}
+
+.modal {
+	padding: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+}
+
+.modal__subtitle {
+	margin: 0;
+	color: var(--ion-color-medium);
+}
+
+.modal__grid {
+	display: grid;
+	gap: 1rem;
+}
+
+.modal__grid label {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	font-weight: 600;
+}
+
+.modal__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.75rem;
+}

@@ -1,0 +1,98 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Partidos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button size="small" (click)="loadMatches()" [disabled]="loading()">
+        Recargar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="loadMatches($event)">
+    <ion-refresher-content pullingText="Desliza para refrescar"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="state" *ngIf="info()">
+    <ion-text color="success">{{ info() }}</ion-text>
+  </div>
+
+  <div class="state" *ngIf="error()">
+    <ion-text color="danger">{{ error() }}</ion-text>
+  </div>
+
+  <div class="spinner" *ngIf="loading()">
+    <ion-spinner name="lines"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!loading() && matches().length">
+    <ion-card *ngFor="let match of matches()">
+      <ion-card-header>
+        <ion-card-title>{{ match.home_team.name }} vs {{ match.away_team.name }}</ion-card-title>
+        <ion-card-subtitle>
+          <ng-container *ngIf="match.scheduled_at; else unscheduled">
+            {{ match.scheduled_at | date: 'medium' }}
+          </ng-container>
+          <ng-template #unscheduled>Sin fecha programada</ng-template>
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="score" *ngIf="match.status === 'completed'; else pending">
+          <div class="score__line">
+            <span>{{ match.home_team.name }}</span>
+            <strong>{{ match.home_score }}</strong>
+          </div>
+          <div class="score__line">
+            <span>{{ match.away_team.name }}</span>
+            <strong>{{ match.away_score }}</strong>
+          </div>
+          <ion-note>Reportado {{ match.played_at | date: 'short' }}</ion-note>
+        </div>
+        <ng-template #pending>
+          <p class="pending">Pendiente de resultado.</p>
+          <ion-button size="small" (click)="openModal(match)">
+            Reportar resultado
+          </ion-button>
+        </ng-template>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+
+  <div class="empty" *ngIf="!loading() && !matches().length && !error()">
+    No hay partidos cargados todavía.
+  </div>
+
+  <ion-modal [isOpen]="modalOpen()" (didDismiss)="closeModal()">
+    <ng-template>
+      <form class="modal" [formGroup]="form" (ngSubmit)="submitResult()">
+        <h2>Reportar resultado</h2>
+        <p *ngIf="selectedMatch() as match" class="modal__subtitle">
+          {{ match.home_team.name }} vs {{ match.away_team.name }}
+        </p>
+
+        <ng-container *ngIf="selectedMatch() as match">
+          <div class="modal__grid">
+            <label>
+              <span>{{ match.home_team.name }}</span>
+              <ion-input type="number" min="0" inputmode="numeric" formControlName="home_score"></ion-input>
+            </label>
+            <label>
+              <span>{{ match.away_team.name }}</span>
+              <ion-input type="number" min="0" inputmode="numeric" formControlName="away_score"></ion-input>
+            </label>
+          </div>
+        </ng-container>
+
+        <div class="modal__actions">
+          <ion-button fill="clear" color="medium" type="button" (click)="closeModal()">
+            Cancelar
+          </ion-button>
+          <ion-button type="submit" [disabled]="form.invalid || reporting()">
+            {{ reporting() ? 'Guardando…' : 'Guardar' }}
+          </ion-button>
+        </div>
+      </form>
+    </ng-template>
+  </ion-modal>
+</ion-content>
