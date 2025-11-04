@@ -1,36 +1,61 @@
-# Prueba técnica — MiniLiga Express (≤ 4 h)
+# Mini Liga Express
 
-Este repositorio es una **semilla** lista para que los candidatos clonen y completen la prueba express en ≤ 4 horas.  
-Incluye estructura, documentación y **scripts** que generan los proyectos de **Laravel**, **Angular** e **Ionic/Capacitor**.
+MVP completo para gestionar una mini liga con **Laravel 11** (API REST), **Angular 17** (web) y **Ionic/Angular** (mobile). Incluye clasificación dinámica, programación de fixtures y registro de resultados desde web y móvil.
 
-> Instrucciones detalladas en cada subcarpeta: `backend/`, `web/`, `mobile/`.
+## Estructura del repositorio
+- `backend/` – API Laravel con endpoints de equipos, partidos, standings y eliminación de equipos.
+- `web/` – SPA Angular con pestañas de Equipos (alta, programación y borrado) y Clasificación.
+- `mobile/` – App Ionic con tabs para listar partidos y reportar marcadores.
+- `openapi.yaml` – contrato de referencia para la API.
+- `DECISIONES.md` – log de decisiones técnicas y próximos pasos.
 
-## Resumen del MVP
-- **Laravel** API:
-  - `GET /api/teams`
-  - `POST /api/teams` `{ name }`
-  - `POST /api/matches/{id}/result` `{ home_score, away_score }`
-  - `GET /api/standings`
-- **Angular**:
-  - Pestaña **Equipos** (alta + listado)
-  - Pestaña **Clasificación**
-- **Ionic/Capacitor**:
-  - Lista de próximos partidos
-  - Registrar resultado (POST al backend)
+## Requisitos previos
+- PHP 8.2+, Composer 2.
+- Node.js 20+, npm 10+.
+- SQLite incluido con PHP (no requiere configuración adicional).
 
-## Scripts de inicialización
-Ejecuta desde la raíz (macOS/Linux). En Windows usa WSL o ejecuta manualmente los comandos equivalentes.
+## Puesta en marcha
+1. **Backend**
+   ```bash
+   cd backend
+   cp .env.example .env
+   composer install
+   php artisan key:generate
+   php artisan migrate --seed
+   php artisan serve
+   ```
+   La API queda disponible en `http://127.0.0.1:8000`.
+2. **Web**
+   ```bash
+   cd web
+   npm install
+   npm start
+   ```
+   La SPA queda expuesta en `http://localhost:4200`. Ajusta `API_BASE_URL` en `src/environments/*` si tu backend usa otra URL.
+3. **Mobile**
+   ```bash
+   cd mobile
+   npm install
+   npm start
+   ```
+   Ionic sirve la aplicación en `http://localhost:8100`. Configura `environment.ts` con la URL del backend cuando pruebes en dispositivos físicos.
 
-```bash
-bash scripts/init_backend.sh
-bash scripts/init_web.sh
-bash scripts/init_mobile.sh
-```
+## Endpoints principales
+- `GET /api/teams`
+- `POST /api/teams`
+- `DELETE /api/teams/{team}`
+- `GET /api/matches`
+- `POST /api/matches`
+- `POST /api/matches/{match}/result`
+- `GET /api/standings`
 
-> Los scripts usan los CLI oficiales (`laravel new`, `ng new`, `ionic start`) si están disponibles.  
-> Alternativamente, sigue los pasos manuales en los README de cada carpeta.
+Revisa `backend/README.md` para payloads y detalles adicionales.
 
-## Extras (opcionales)
-- Camera preview en móvil.
-- Orden de standings por `points`, `goal_diff`, `goals_for`.
-- Docker Compose con MySQL.
+## Verificación rápida
+- Backend: `php artisan test`
+- Web: `npm run lint && npm run test` (Karma) && `npm run build`
+- Mobile: `npm run lint && npm run test`
+
+## Documentación complementaria
+- `backend/README.md`, `web/README.md`, `mobile/README.md`: guías específicas de cada cliente.
+- `DECISIONES.md`: trade-offs de arquitectura, criterios y trabajos pendientes.
