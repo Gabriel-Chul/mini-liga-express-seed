@@ -1,0 +1,76 @@
+<section class="page">
+  <header class="page__header">
+    <h1>Equipos</h1>
+    <button type="button" class="refresh" (click)="loadTeams()" [disabled]="loading()">Recargar</button>
+  </header>
+
+  <form class="card" [formGroup]="form" (ngSubmit)="createTeam()" novalidate>
+    <h2>Alta rápida</h2>
+    <label class="field">
+      <span>Nombre del equipo</span>
+      <input type="text" formControlName="name" placeholder="Ej. Halcones FC" />
+    </label>
+    <div class="field__hint" *ngIf="form.controls.name.touched && form.controls.name.invalid">
+      <span *ngIf="form.controls.name.errors?.['required']">El nombre es obligatorio.</span>
+      <span *ngIf="form.controls.name.errors?.['maxlength']">Máximo 255 caracteres.</span>
+    </div>
+    <div class="alert" *ngIf="error()">{{ error() }}</div>
+    <div class="notice" *ngIf="success()">{{ success() }}</div>
+    <button type="submit" class="primary" [disabled]="isFormInvalid">{{ submitting() ? 'Guardando…' : 'Crear equipo' }}</button>
+  </form>
+
+  <form class="card" [formGroup]="matchForm" (ngSubmit)="scheduleMatch()" novalidate>
+    <h2>Programar partido</h2>
+    <p class="card__subtitle">
+      Selecciona dos equipos y, opcionalmente, define fecha y hora del encuentro.
+    </p>
+    <div class="match-grid">
+      <label class="field">
+        <span>Equipo local</span>
+        <select formControlName="home_team_id">
+          <option [ngValue]="null">Selecciona equipo</option>
+          <option *ngFor="let team of teams()" [ngValue]="team.id">{{ team.name }}</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Equipo visitante</span>
+        <select formControlName="away_team_id">
+          <option [ngValue]="null">Selecciona equipo</option>
+          <option *ngFor="let team of teams()" [ngValue]="team.id">{{ team.name }}</option>
+        </select>
+      </label>
+    </div>
+    <label class="field">
+      <span>Fecha del partido</span>
+      <input type="datetime-local" formControlName="scheduled_at" />
+    </label>
+    <div class="alert" *ngIf="matchError()">{{ matchError() }}</div>
+    <div class="notice" *ngIf="matchSuccess()">{{ matchSuccess() }}</div>
+    <button type="submit" class="primary" [disabled]="isMatchFormInvalid">
+      {{ scheduling() ? 'Programando…' : 'Crear partido' }}
+    </button>
+  </form>
+
+  <section class="card">
+    <header class="card__header">
+      <h2>Listado ({{ teams().length }})</h2>
+    </header>
+
+    <div class="alert" *ngIf="deleteError()">{{ deleteError() }}</div>
+
+    <div class="empty" *ngIf="!loading() && teams().length === 0">
+      Todavía no hay equipos registrados.
+    </div>
+
+    <div class="spinner" *ngIf="loading()">Cargando…</div>
+
+    <ul class="list" *ngIf="!loading() && teams().length > 0">
+      <li *ngFor="let team of teams()">
+        <span>{{ team.name }}</span>
+        <button type="button" class="ghost" (click)="deleteTeam(team)" [disabled]="deletingId() === team.id">
+          {{ deletingId() === team.id ? 'Eliminando…' : 'Eliminar' }}
+        </button>
+      </li>
+    </ul>
+  </section>
+</section>

@@ -1,0 +1,21 @@
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<div class="layout">
+  <header class="layout__header">
+    <div class="brand">
+      <span class="brand__dot"></span>
+      <div>
+        <h1>{{ title() }}</h1>
+        <p>MVP de gestión de mini liga</p>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a routerLink="/teams" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Equipos</a>
+      <a routerLink="/standings" routerLinkActive="active">Clasificación</a>
+    </nav>
+  </header>
+
+  <main class="layout__content">
+    <router-outlet />
+  </main>
+</div>

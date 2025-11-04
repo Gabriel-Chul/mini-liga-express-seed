@@ -1,0 +1,46 @@
+<section class="page">
+  <header class="page__header">
+    <h1>Clasificación</h1>
+    <button type="button" class="refresh" (click)="loadStandings()" [disabled]="loading()">Recargar</button>
+  </header>
+
+  <div class="card">
+    <div class="spinner" *ngIf="loading()">Cargando…</div>
+    <div class="alert" *ngIf="error()">{{ error() }}</div>
+
+    <table *ngIf="!loading() && !error()" class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Equipo</th>
+          <th>Pts</th>
+          <th>PJ</th>
+          <th>PG</th>
+          <th>PE</th>
+          <th>PP</th>
+          <th>GF</th>
+          <th>GC</th>
+          <th>DG</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let standing of standings()">
+          <td>{{ standing.position }}</td>
+          <td>{{ standing.name }}</td>
+          <td>{{ standing.points }}</td>
+          <td>{{ standing.played }}</td>
+          <td>{{ standing.won }}</td>
+          <td>{{ standing.drawn }}</td>
+          <td>{{ standing.lost }}</td>
+          <td>{{ standing.goals_for }}</td>
+          <td>{{ standing.goals_against }}</td>
+          <td>{{ standing.goal_difference }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="empty" *ngIf="!loading() && !error() && standings().length === 0">
+      No hay resultados registrados todavía.
+    </div>
+  </div>
+</section>
