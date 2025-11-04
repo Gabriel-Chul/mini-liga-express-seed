@@ -1,0 +1,27 @@
+.state {
+	padding: 0.75rem 1rem;
+	text-align: center;
+}
+
+.spinner {
+	display: flex;
+	justify-content: center;
+	padding: 2rem 0;
+}
+
+.empty {
+	text-align: center;
+	color: var(--ion-color-medium);
+	padding: 2rem 1rem;
+}
+
+ion-item h2 {
+	margin: 0 0 0.25rem;
+	font-weight: 600;
+}
+
+ion-item p {
+	margin: 0;
+	font-size: 0.85rem;
+	color: var(--ion-color-medium);
+}

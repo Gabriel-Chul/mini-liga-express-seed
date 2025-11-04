@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Clasificación</ion-title>
+    <ion-buttons slot="end">
+      <ion-button size="small" (click)="loadStandings()" [disabled]="loading()">
+        Recargar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="loadStandings($event)">
+    <ion-refresher-content pullingText="Desliza para refrescar"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="state" *ngIf="error()">
+    <ion-text color="danger">{{ error() }}</ion-text>
+  </div>
+
+  <div class="spinner" *ngIf="loading()">
+    <ion-spinner name="lines"></ion-spinner>
+  </div>
+
+  <ion-list *ngIf="!loading() && standings().length">
+    <ion-item *ngFor="let standing of standings()">
+      <ion-badge slot="start" color="primary">{{ standing.position }}</ion-badge>
+      <ion-label>
+        <h2>{{ standing.name }}</h2>
+        <p>
+          {{ standing.points }} pts · PJ {{ standing.played }} · PG {{ standing.won }} · PE {{ standing.drawn }} · PP {{ standing.lost }}
+        </p>
+        <p>GF {{ standing.goals_for }} · GC {{ standing.goals_against }} · DG {{ standing.goal_difference }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div class="empty" *ngIf="!loading() && !standings().length && !error()">
+    Aún no hay clasificación disponible.
+  </div>
+</ion-content>
